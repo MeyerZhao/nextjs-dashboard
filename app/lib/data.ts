@@ -1,3 +1,5 @@
+import { unstable_noStore as noStore } from 'next/cache';
+
 import { sql } from '@vercel/postgres';
 import {
   CustomerField,
@@ -40,6 +42,7 @@ export async function fetchLatestInvoices() {
       JOIN customers ON invoices.customer_id = customers.id
       ORDER BY invoices.date DESC
       LIMIT 5`;
+      // ASC (default)  DESC
 
     const latestInvoices = data.rows.map((invoice) => ({
       ...invoice,
@@ -64,6 +67,7 @@ export async function fetchCardData() {
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
          FROM invoices`;
 
+    //  便面瀑布请求的方式常见的 是并行同时发起请求。
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
